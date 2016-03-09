@@ -35,7 +35,8 @@
 # yyyy-mm-dd  Description
 # 2016-03-29  Inserted a comment header to match the v.Nu license
 #             Added comments about modifications
-#             Updated include directives to refer to v.Nu repo
+#             Updated include directives to refer to v.Nu repo schemas
+#             except for locally hosted rdf.rnc
 
 namespace svg = "http://www.w3.org/2000/svg"
 namespace math = "http://www.w3.org/1998/Math/MathML"
@@ -45,7 +46,11 @@ namespace rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 include "http://validator.github.io/validator/schema/svg11/svg11-inc.rnc"
 include "http://validator.github.io/validator/schema/svg11/inkscape.rnc"
 include "http://validator.github.io/validator/schema/mml3/mathml3-inc.rnc"
-include "http://validator.github.io/validator/schema/rdf/rdf.rnc"
+# rdf.rnc does not exist in rdf directory in source repo; it's in
+# the .drivers directory, which, for some unknown reason, is not
+# accessible via github.io URLs (the leading period in the directory name?)
+# Referring to locally hosted copy instead
+include "rdf.rnc"
 
 common.elem.metadata |= rdf.elem
 SVG.metadata.content |= rdf.elem
