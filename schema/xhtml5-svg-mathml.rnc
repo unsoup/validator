@@ -1,0 +1,79 @@
+# Copyright (c) 2007-2016 Mozilla Foundation
+# Modifications copyright 2016 Graham Hannington
+#                   
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+# This is a modified version of the following file from the Nu Html Checker:
+#
+# https://github.com/validator/validator/blob/master/schema/.drivers/xhtml5-svg-mathml.rnc
+#
+# commit 0137f86 on 2015-06-28
+# downloaded from GitHub on 2016-01-29.
+
+# This modified version enables the v.Nu schemas to be accessed directly via GitHub;
+# the modifications are necessary to refer to the directory structure of
+# the source files in the v.Nu GitHub repository, rather than the structure
+# of the distributed files.
+
+# Modifications:
+# yyyy-mm-dd  Description
+# 2016-03-29  Inserted a comment header to match the v.Nu license
+#             Added comments about modifications
+#             Updated include directives to refer to v.Nu repo
+
+namespace svg = "http://www.w3.org/2000/svg"
+namespace math = "http://www.w3.org/1998/Math/MathML"
+namespace rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
+# URIs changed from local paths to HTTP URLs
+include "http://validator.github.io/validator/schema/svg11/svg11-inc.rnc"
+include "http://validator.github.io/validator/schema/svg11/inkscape.rnc"
+include "http://validator.github.io/validator/schema/mml3/mathml3-inc.rnc"
+include "http://validator.github.io/validator/schema/rdf/rdf.rnc"
+
+common.elem.metadata |= rdf.elem
+SVG.metadata.content |= rdf.elem
+
+common.elem.phrasing |= svg
+
+common.elem.phrasing |= math
+
+SVG.foreignObject.content |=
+	(	math
+	|	html.elem
+	|	body.elem
+	|	common.inner.flow
+	)
+
+annotation-xml.model.svg |= svg
+
+annotation-xml.model.xhtml |=
+	(	html.elem
+	|	common.elem.flow
+	)
+
+SVG.desc.content |= ( common.elem.flow & text )*
+SVG.title.content |= ( common.elem.flow & text )*
+SVG.metadata.content |= ( common.elem.flow & text )*
+
+# in our integration, <mtext> is the only MathML "token element" that can
+# contain HTML element content; the <mi>, <mn>, <mo> and <ms> elements
+# cannot; see http://www.w3.org/Bugs/Public/show_bug.cgi?id=9859#c8 for a
+# rationale
+mtext.content |= common.elem.phrasing

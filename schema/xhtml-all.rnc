@@ -1,0 +1,8 @@
+# This file is a substitute for, but is not a modified version of,
+# the file of the same name from v.Nu
+
+# Modified version of v.Nu schema hosted by unsoup/validator:
+include "xhtml5-svg-mathml.rnc"
+# Original v.Nu schemas:
+include "http://validator.github.io/validator/schema/html5/xhtml5.rnc"
+include "http://validator.github.io/validator/schema/html5/rdfa.rnc"
