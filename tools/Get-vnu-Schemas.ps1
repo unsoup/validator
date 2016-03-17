@@ -169,7 +169,7 @@ ForEach ($line in Get-Content $entityMapPath) {
     $relativeSchemaFilePath = $uri.Substring($schemaUriBase.length).Replace("/", "\")
     $destinationFilePath = (Join-Path $Destination $relativeSchemaFilePath)
     Copy-New-Item $sourceFilePath $destinationFilePath
-	}
+  }
 }
 
 # Download license files from v.Nu GitHub repo to destination directory
