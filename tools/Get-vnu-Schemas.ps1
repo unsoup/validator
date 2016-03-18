@@ -1,9 +1,9 @@
 <#
-.SYNOPSIS
+.Synopsis
 Extracts the schemas from the latest release of the v.Nu .jar on GitHub.
 
-.DESCRIPTION
-This script:
+.Description
+This script performs the following actions:
 1. Uses the GitHub API to get the tag name of the latest v.Nu release
 2. Uses the tag name to build a URL to download the latest v.Nu JAR .zip
 3. Downloads the release .zip
@@ -14,29 +14,30 @@ Requires:
 -  PowerShell 4, or later
 -  7-Zip (http://www.7-zip.org/)
 
-.PARAMETER Destination
+.Parameter Destination
 The path of the output directory for the schemas.
 If omitted, the schemas are output to a vnu-schema directory under the current directory.
 If the output directory already exists, it is deleted before being written to.
 
-.EXAMPLE
+.Example
 C:\PS> .\Get-vnu-Schemas.ps1 c:\temp\vnu-schema
 
-.INPUTS
+.Inputs
 - The v.Nu GitHub repo (validator/validator)
 - The unsoup/validator GitHub repo
 
-.OUTPUTS
+.Outputs
 Outputs v.Nu schemas in the same directory structure used by v.Nu.
 
-.LINK
+.Link
 https://github.com/unsoup/validator
 #>
 
 # Copyright (c) 2016 Graham Hannington
 
 # To do:
-# -  Replace Out-Null with something that remains silent except on error
+# -  Replace Out-Null with code that remains silent except on error
+# -  Insert Write-Verbose, Write-Debug where appropriate
 
 [CmdletBinding()]
 Param(
@@ -47,7 +48,7 @@ Param(
 # Functions
 
 <#
-.SYNOPSIS
+.Synopsis
 Copies file, creating destination directory path if it does not exist
 #>
 function Copy-New-Item {
@@ -59,14 +60,14 @@ function Copy-New-Item {
     [string] $DestinationFilePath
   )
 
-  If (-not (Test-Path $DestinationFilePath)) {
+  if (-not (Test-Path $DestinationFilePath)) {
     New-Item -ItemType File -Path $DestinationFilePath -Force | Out-Null
   } 
   Copy-Item -Path $SourceFilePath -Destination $DestinationFilePath | Out-Null
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 Uses GitHub API to get tag name of latest release of a repo
 #>
 function Get-GitHub-Repo-Latest-Release-Tag {
@@ -104,12 +105,13 @@ $tag = Get-GitHub-Repo-Latest-Release-Tag $owner $repo
 # .jar file name without release tag
 $vnuJarFileName = "vnu.jar"
 
+# File name of release .zip with tag suffix
 $vnuJarZipFileName = $vnuJarFileName + "_" + $tag + ".zip"
 
 # Path of .jar inside release .zip
 $vnuJarPathInZip = "dist/" + $vnuJarFileName
 
-# Path of files directory inside .jar
+# Path of files inside .jar
 $vnuFilesPathInJar = "nu/validator/localentities/files/*"
 
 # Work subdirectory under temporary directory
@@ -155,7 +157,7 @@ if (Test-Path $Destination) {
 
 # "Unresolve" the entitymap:
 # Copy the schema files into a directory structure based on the entity URI
-ForEach ($line in Get-Content $entityMapPath) {
+foreach ($line in Get-Content $entityMapPath) {
   # Split the entitymap line into two fields
   $fields = $line.Split()
   # The first field is the URI
@@ -163,6 +165,7 @@ ForEach ($line in Get-Content $entityMapPath) {
   if ($uri.StartsWith($schemaUriBase)) {
     # The second field is the file name
     $schemaEntityFileName = $fields[1]
+    # Path of file extracted from .jar
     $sourceFilePath = (Join-Path $vnuTempDirectoryPath $schemaEntityFileName)
     # Get relative path of schema file,
     # and replace forward slashes in the URI with Windows-friendly backslashes
